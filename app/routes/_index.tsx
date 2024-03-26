@@ -1,12 +1,14 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import hljs from "highlight.js";
+import "highlight.js/styles/github-dark.css";
+import { codes } from "~/mocks";
 
-const ITEM_COUNT = 10;
 const COLUMN_COUNT = 3;
 
 interface Item {
   id: number;
-  height: number;
+  code: string;
 }
 
 export const meta: MetaFunction = () => {
@@ -48,47 +50,37 @@ function generateGridTemplateAreas(items: Item[]) {
 }
 
 export const loader = async () => {
-  const items = Array.from({ length: ITEM_COUNT }, (_, index) => ({
+  const items = codes.map((code, index) => ({
     id: index,
-    height: Math.floor(Math.random() * 400) + 100,
+    code,
   }));
 
   const gridTemplateAreas = generateGridTemplateAreas(items);
 
-  return {
-    items,
-    gridTemplateAreas,
-  };
+  const html = [
+    `<div style='display: grid; grid-template-areas: ${gridTemplateAreas}; gap: 1rem;'>`,
+    ...items.map((item) => {
+      const gridAreaName = itemToGridAreaName(item);
+      const codeHTML = hljs.highlight("javascript", item.code).value;
+      return `<pre style='margin: 0; grid-area=${gridAreaName};'><code class='hljs' style='border-radius: 0.5rem; overflow: hidden; box-sizing: border-box;'>${codeHTML}</code></pre>`;
+    }),
+    "</div>",
+  ].join("");
+
+  return { html };
 };
 
 export default function Index() {
-  const { items, gridTemplateAreas } = useLoaderData<typeof loader>();
+  const { html } = useLoaderData<typeof loader>();
 
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateAreas,
-          gap: "1rem",
-        }}
-      >
-        {items.map((item) => (
-          <div
-            key={item.id}
-            style={{
-              background: "rgba(0, 0, 0, 0.1)",
-              width: "100%",
-              height: item.height,
-              borderRadius: "0.5rem",
-              color: "black",
-              gridArea: itemToGridAreaName(item),
-            }}
-          >
-            <div style={{ padding: "0.75rem 1rem" }}>{item.id + 1}</div>
-          </div>
-        ))}
-      </div>
+    <div
+      style={{
+        fontFamily: "system-ui, sans-serif",
+        lineHeight: "1.8",
+      }}
+    >
+      <div dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   );
 }
