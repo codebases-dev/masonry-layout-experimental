@@ -1,6 +1,14 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
+const ITEM_COUNT = 10;
+const COLUMN_COUNT = 3;
+
+interface Item {
+  id: number;
+  height: number;
+}
+
 export const meta: MetaFunction = () => {
   return [
     { title: "New Remix App" },
@@ -8,57 +16,76 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+function itemToGridAreaName(item: Item) {
+  return `item${item.id}`;
+}
+
+function generateGridTemplateAreas(items: Item[]) {
+  const separatedItems: Item[][] = [];
+  for (let i = 0; i < items.length; i += COLUMN_COUNT) {
+    separatedItems.push(items.slice(i, i + COLUMN_COUNT));
+  }
+
+  const gridTemplateAreas = separatedItems.reduce(
+    (acc: string, rowItems: Item[]) => {
+      let rowTemplate = rowItems.reduce((rowAcc, item) => {
+        return `${rowAcc} ${itemToGridAreaName(item)}`;
+      }, "");
+
+      if (rowItems.length < COLUMN_COUNT) {
+        const remainingItems = COLUMN_COUNT - rowItems.length;
+        for (let i = 0; i < remainingItems; i++) {
+          rowTemplate = `${rowTemplate} .`;
+        }
+      }
+
+      return `${acc} "${rowTemplate}"`;
+    },
+    ""
+  );
+
+  return gridTemplateAreas;
+}
+
 export const loader = async () => {
-  const items = Array.from({ length: 10 }, (_, idx) => ({
-    idx,
+  const items = Array.from({ length: ITEM_COUNT }, (_, index) => ({
+    id: index,
     height: Math.floor(Math.random() * 400) + 100,
   }));
 
-  await new Promise((resolve) => setTimeout(resolve, 100));
+  const gridTemplateAreas = generateGridTemplateAreas(items);
 
-  return { items };
+  return {
+    items,
+    gridTemplateAreas,
+  };
 };
 
 export default function Index() {
-  const { items } = useLoaderData<typeof loader>();
+  const { items, gridTemplateAreas } = useLoaderData<typeof loader>();
 
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix</h1>
-
       <div
         style={{
           display: "grid",
-          alignItems: "start",
-          columnGap: "16px",
-          gridTemplateColumns: "repeat(3, minmax(0px, 1fr))",
+          gridTemplateAreas,
+          gap: "1rem",
         }}
       >
-        {Array.from({ length: 3 }, (_, idx) => idx).map((columnIndex) => (
+        {items.map((item) => (
           <div
-            key={columnIndex}
+            key={item.id}
             style={{
-              display: "grid",
-              rowGap: "16px",
-              gridTemplateColumns: "minmax(0px, 1fr)",
+              background: "rgba(0, 0, 0, 0.1)",
+              width: "100%",
+              height: item.height,
+              borderRadius: "0.5rem",
+              color: "black",
+              gridArea: itemToGridAreaName(item),
             }}
           >
-            {items
-              .filter((_, idx) => idx % 3 === columnIndex)
-              .map(({ idx, height }) => (
-                <div
-                  key={idx}
-                  style={{
-                    background: "rgba(0, 0, 0, 0.1)",
-                    width: "100%",
-                    height,
-                    borderRadius: "0.5rem",
-                    color: "black",
-                  }}
-                >
-                  <div style={{ padding: "0.75rem 1rem" }}>{idx + 1}</div>
-                </div>
-              ))}
+            <div style={{ padding: "0.75rem 1rem" }}>{item.id + 1}</div>
           </div>
         ))}
       </div>
