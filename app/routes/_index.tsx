@@ -18,33 +18,55 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-function itemToGridAreaName(item: Item) {
+function getGridAreaName(item: Item) {
   return `item${item.id}`;
 }
 
-function generateGridTemplateAreas(items: Item[]) {
-  const separatedItems: Item[][] = [];
-  for (let i = 0; i < items.length; i += COLUMN_COUNT) {
-    separatedItems.push(items.slice(i, i + COLUMN_COUNT));
-  }
+function divideElementsIntoColumns(items: Item[], columnCount: number) {
+  const columns = Array.from({ length: columnCount }, (): Item[] => []);
 
-  const gridTemplateAreas = separatedItems.reduce(
-    (acc: string, rowItems: Item[]) => {
-      let rowTemplate = rowItems.reduce((rowAcc, item) => {
-        return `${rowAcc} ${itemToGridAreaName(item)}`;
-      }, "");
+  items.forEach((item, index) => {
+    const columnIndex = index % columnCount;
+    columns[columnIndex].push(item);
+  });
 
-      if (rowItems.length < COLUMN_COUNT) {
-        const remainingItems = COLUMN_COUNT - rowItems.length;
-        for (let i = 0; i < remainingItems; i++) {
-          rowTemplate = `${rowTemplate} .`;
-        }
-      }
+  return columns;
+}
 
-      return `${acc} "${rowTemplate}"`;
-    },
-    ""
+function calculateCodeLineCount(code: string) {
+  return code.endsWith("\n")
+    ? code.split("\n").length - 1
+    : code.split("\n").length;
+}
+
+function generateGridTemplateAreas(items: Item[], columnCount: number) {
+  const dividedColumns = divideElementsIntoColumns(items, columnCount);
+
+  const gridTemplateAreaBlocks = dividedColumns.map((columnItems) => {
+    return columnItems.reduce((acc, item) => {
+      const rowCount = calculateCodeLineCount(item.code) + 2;
+      const rows = Array.from({ length: rowCount }, () =>
+        getGridAreaName(item)
+      );
+      return acc.concat(rows);
+    }, [] as string[]);
+  });
+
+  const maxRows = Math.max(
+    ...gridTemplateAreaBlocks.map((block) => block.length)
   );
+
+  const gridTemplateAreas = Array.from(
+    { length: maxRows },
+    (_, rowIndex) =>
+      `"${gridTemplateAreaBlocks.reduce(
+        (acc, block) =>
+          acc === ""
+            ? `${block[rowIndex] || "."}`
+            : `${acc} ${block[rowIndex] || "."}`,
+        ""
+      )}"`
+  ).join(" ");
 
   return gridTemplateAreas;
 }
@@ -55,14 +77,14 @@ export const loader = async () => {
     code,
   }));
 
-  const gridTemplateAreas = generateGridTemplateAreas(items);
+  const gridTemplateAreas = generateGridTemplateAreas(items, COLUMN_COUNT);
 
   const html = [
-    `<div style='display: grid; grid-template-areas: ${gridTemplateAreas}; grid-template-columns: repeat(${COLUMN_COUNT}, 24rem); gap: 1rem;'>`,
+    `<div style='display: grid; grid-template-areas: ${gridTemplateAreas}; grid-template-columns: repeat(${COLUMN_COUNT}, 24rem);'>`,
     ...items.map((item) => {
-      const gridAreaName = itemToGridAreaName(item);
+      const gridAreaName = getGridAreaName(item);
       const codeHTML = hljs.highlight("javascript", item.code).value;
-      return `<pre style='margin: 0; grid-area=${gridAreaName};'><code class='hljs' style='border-radius: 0.5rem; overflow: hidden; box-sizing: border-box;'>${codeHTML}</code></pre>`;
+      return `<div style='padding: 1rem; grid-area: ${gridAreaName};'><pre style='margin: 0;'><code class='hljs' style='border-radius: 0.5rem; overflow: hidden; box-sizing: border-box; padding: 1rem 1.25rem;'>${codeHTML}</code></pre></div>`;
     }),
     "</div>",
   ].join("");
@@ -81,7 +103,12 @@ export default function Index() {
       }}
     >
       <div
-        style={{ display: "flex", justifyContent: "center" }}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          fontSize: "1rem",
+          lineHeight: "2",
+        }}
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>
