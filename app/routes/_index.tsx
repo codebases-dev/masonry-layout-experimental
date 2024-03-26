@@ -58,7 +58,7 @@ export const loader = async () => {
   const gridTemplateAreas = generateGridTemplateAreas(items);
 
   const html = [
-    `<div style='display: grid; grid-template-areas: ${gridTemplateAreas}; gap: 1rem;'>`,
+    `<div style='display: grid; grid-template-areas: ${gridTemplateAreas}; grid-template-columns: repeat(${COLUMN_COUNT}, 24rem); gap: 1rem;'>`,
     ...items.map((item) => {
       const gridAreaName = itemToGridAreaName(item);
       const codeHTML = hljs.highlight("javascript", item.code).value;
@@ -80,7 +80,10 @@ export default function Index() {
         lineHeight: "1.8",
       }}
     >
-      <div dangerouslySetInnerHTML={{ __html: html }} />
+      <div
+        style={{ display: "flex", justifyContent: "center" }}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
     </div>
   );
 }
