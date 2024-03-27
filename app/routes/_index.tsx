@@ -1,8 +1,4 @@
-import type { LinksFunction, MetaFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
-import hljs from "highlight.js";
-import "highlight.js/styles/github-dark.css";
-import { codes } from "~/mocks";
+import type { MetaFunction } from "@remix-run/node";
 
 export const meta: MetaFunction = () => {
   return [
@@ -11,30 +7,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export const links: LinksFunction = () => {
-  return [
-    {
-      rel: "stylesheet",
-      href: "/css",
-    },
-  ];
-};
-
-export const loader = async () => {
-  const data = codes.map((code, index) => ({
-    id: index,
-    content: code,
-    contentHTML: hljs.highlight("javascript", code).value,
-  }));
-
-  return {
-    data,
-  };
-};
-
 export default function Index() {
-  const { data } = useLoaderData<typeof loader>();
-
   return (
     <div
       style={{
@@ -42,31 +15,12 @@ export default function Index() {
         lineHeight: "1.8",
       }}
     >
-      <div className="container">
-        <div
-          className="item-container"
-          style={{
-            display: "grid",
-          }}
-        >
-          {data.map((item) => (
-            <div
-              className="item"
-              key={item.id}
-              style={{
-                gridArea: `item${item.id}`,
-              }}
-            >
-              <pre style={{ margin: 0 }}>
-                <code
-                  className="hljs code"
-                  dangerouslySetInnerHTML={{ __html: item.contentHTML }}
-                />
-              </pre>
-            </div>
-          ))}
-        </div>
-      </div>
+      <h1>Welcome to Remix</h1>
+      <ul>
+        <li>
+          <a href="/grid-template-areas">Styling with grid-template-areas</a>
+        </li>
+      </ul>
     </div>
   );
 }
