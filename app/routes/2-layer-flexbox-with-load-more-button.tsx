@@ -56,7 +56,7 @@ export default function Index() {
   }, []);
 
   const loadMoreData = async () => {
-    const limit = 8;
+    const limit = 100;
     const newData = await fetchCodes({
       offset: data.length,
       limit,
@@ -154,6 +154,7 @@ export default function Index() {
             {loadedAll ? "Loaded all" : "Load more"}
           </button>
         )}
+        {<p>Data size: {data.length}</p>}
       </div>
     </div>
   );

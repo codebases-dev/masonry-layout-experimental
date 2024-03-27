@@ -239,5 +239,13 @@ export const fetchCodes = async ({
   offset,
   limit,
 }: FetchOptions | undefined = {}) => {
-  return codes.slice(offset ?? 0, limit ? (offset ?? 0) + limit : undefined);
+  const offset_ = offset ?? 0;
+  const limit_ = limit ? limit : codes.length;
+
+  const codes_ = [...codes];
+  while (offset_ + limit_ > codes_.length) {
+    codes_.push(...codes);
+  }
+
+  return codes_.slice(offset_, limit ? offset_ + limit : undefined);
 };
