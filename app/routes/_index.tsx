@@ -16,6 +16,10 @@ export default function Index() {
       }}
     >
       <h1>Welcome to Remix</h1>
+      <p>
+        The website is exploring various approaches to styling a code snippet
+        gallery using a masonry layout.
+      </p>
       <ul>
         <li>
           <a href="/grid-template-areas">Styling with grid-template-areas</a>

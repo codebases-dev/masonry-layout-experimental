@@ -6,8 +6,8 @@ import { codes } from "~/mocks";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Styling with Grid Template Areas" },
-    { name: "description", content: "Styling with Grid Template Areas" },
+    { title: "Styling with grid-template-areas" },
+    { name: "description", content: "Styling with grid-template-areas" },
   ];
 };
 
@@ -43,7 +43,7 @@ export default function Index() {
       }}
     >
       <a href="/">Back to home</a>
-      <h1>Styling with Grid Template Areas</h1>
+      <h1>Styling with grid-template-areas</h1>
       <div className="container">
         <div
           className="item-container"
