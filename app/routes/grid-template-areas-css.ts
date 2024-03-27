@@ -1,24 +1,9 @@
 import { LoaderFunction } from "@remix-run/cloudflare";
 import { codes } from "~/mocks";
-
-interface DataItem {
-  id: number;
-  content: string;
-}
+import { type DataItem, divideItemsIntoColumns } from "~/utils/masonry-layout";
 
 function getGridAreaName(item: DataItem) {
   return `item${item.id}`;
-}
-
-function divideElementsIntoColumns(items: DataItem[], columnCount: number) {
-  const columns = Array.from({ length: columnCount }, (): DataItem[] => []);
-
-  items.forEach((item, index) => {
-    const columnIndex = index % columnCount;
-    columns[columnIndex].push(item);
-  });
-
-  return columns;
 }
 
 function calculateCodeLineCount(code: string) {
@@ -28,7 +13,7 @@ function calculateCodeLineCount(code: string) {
 }
 
 function generateGridTemplateAreas(items: DataItem[], columnCount: number) {
-  const dividedColumns = divideElementsIntoColumns(items, columnCount);
+  const dividedColumns = divideItemsIntoColumns(items, columnCount);
 
   const gridTemplateAreaBlocks = dividedColumns.map((columnItems) => {
     return columnItems.reduce((acc, item) => {

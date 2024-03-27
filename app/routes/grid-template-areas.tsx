@@ -15,7 +15,7 @@ export const links: LinksFunction = () => {
   return [
     {
       rel: "stylesheet",
-      href: "/css",
+      href: "/grid-template-areas-css",
     },
   ];
 };
