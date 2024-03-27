@@ -229,3 +229,15 @@ for (const color of colors) {
 }
 `,
 ];
+
+interface FetchOptions {
+  offset?: number;
+  limit?: number;
+}
+
+export const fetchCodes = async ({
+  offset,
+  limit,
+}: FetchOptions | undefined = {}) => {
+  return codes.slice(offset ?? 0, limit ? (offset ?? 0) + limit : undefined);
+};
