@@ -24,6 +24,9 @@ export default function Index() {
         <li>
           <a href="/grid-template-areas">Styling with grid-template-areas</a>
         </li>
+        <li>
+          <a href="/2-layer-flexbox">Styling with 2 layer flexbox</a>
+        </li>
       </ul>
     </div>
   );
