@@ -112,8 +112,6 @@ export const loader: LoaderFunction = async () => {
     }
   `;
 
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
   return new Response(css, {
     headers: {
       "Content-Type": "text/css",
