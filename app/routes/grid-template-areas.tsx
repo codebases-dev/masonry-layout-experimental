@@ -1,4 +1,4 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/cloudflare";
 import { json, useLoaderData } from "@remix-run/react";
 import "highlight.js/styles/github-dark.css";
 import { useState } from "react";
