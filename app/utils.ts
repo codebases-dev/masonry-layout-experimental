@@ -1,7 +1,17 @@
+import hljs from "highlight.js";
+
 export interface DataItem {
   id: number;
   content: string;
   contentHTML?: string;
+}
+
+export function transformData(data: string[], offset: number = 0) {
+  return data.map((code, index) => ({
+    id: index + offset,
+    content: code,
+    contentHTML: hljs.highlight(code, { language: "javascript" }).value,
+  }));
 }
 
 export function divideItemsIntoColumns(

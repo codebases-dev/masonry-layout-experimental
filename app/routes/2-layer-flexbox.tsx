@@ -1,6 +1,5 @@
 import { json, MetaFunction } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
-import hljs from "highlight.js";
 import "highlight.js/styles/github-dark.css";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "~/components/button";
@@ -9,7 +8,7 @@ import { H1 } from "~/components/h1";
 import { Link } from "~/components/link";
 import { useOnResizeWindow } from "~/hooks/use-on-resize-window";
 import { fetchCodes } from "~/mocks";
-import { type DataItem, divideItemsIntoColumns } from "~/utils/masonry-layout";
+import { type DataItem, divideItemsIntoColumns, transformData } from "~/utils";
 
 export const meta: MetaFunction = () => {
   return [
@@ -24,14 +23,8 @@ export const meta: MetaFunction = () => {
 export const loader = async () => {
   const data = await fetchCodes();
 
-  const transformedData = data.map((code, index) => ({
-    id: index,
-    content: code,
-    contentHTML: hljs.highlight("javascript", code).value,
-  }));
-
   return json({
-    data: transformedData,
+    data: transformData(data),
   });
 };
 
@@ -57,15 +50,12 @@ export default function Index() {
   }, []);
 
   const loadMoreData = async () => {
-    const newData = await fetchCodes();
+    const fetchedData = await fetchCodes();
 
-    const transformedData = newData.map((code, index) => ({
-      id: data.length + index,
-      content: code,
-      contentHTML: hljs.highlight("javascript", code).value,
-    }));
-
-    setData((prevData) => [...prevData, ...transformedData]);
+    setData((prevData) => [
+      ...prevData,
+      ...transformData(fetchedData, prevData.length),
+    ]);
   };
 
   useEffect(() => {

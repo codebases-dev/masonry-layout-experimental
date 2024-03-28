@@ -1,6 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
-import hljs from "highlight.js";
 import "highlight.js/styles/github-dark.css";
 import { useState } from "react";
 import { Button } from "~/components/button";
@@ -11,7 +10,8 @@ import { fetchCodes } from "~/mocks";
 import {
   type DataItem,
   generateGridTemplateAreas,
-} from "~/utils/masonry-layout";
+  transformData,
+} from "~/utils";
 
 function generateGridStyleHTML(data: DataItem[]) {
   return `
@@ -78,12 +78,7 @@ export const meta: MetaFunction = () => {
 
 export const loader = async () => {
   const data = await fetchCodes();
-
-  const transformedData = data.map((code, index) => ({
-    id: index,
-    content: code,
-    contentHTML: hljs.highlight("javascript", code).value,
-  }));
+  const transformedData = transformData(data);
 
   return json({
     data: transformedData,
@@ -97,18 +92,13 @@ export default function Index() {
   const [styleHTML, setStyleHTML] = useState(styleHTML_);
 
   const loadMoreData = async () => {
-    console.log("loadMoreData");
     const fetchedData = await fetchCodes();
 
-    const transformedFetchedData = fetchedData.map((code, index) => ({
-      id: data.length + index,
-      content: code,
-      contentHTML: hljs.highlight("javascript", code).value,
-    }));
-
-    const newData = [...data, ...transformedFetchedData];
+    const newData = [...data, ...transformData(fetchedData, data.length)];
     setData(newData);
-    setStyleHTML(generateGridStyleHTML(newData));
+
+    const newStyleHTML = generateGridStyleHTML(newData);
+    setStyleHTML(newStyleHTML);
   };
 
   return (
