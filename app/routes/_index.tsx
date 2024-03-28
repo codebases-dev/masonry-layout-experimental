@@ -28,6 +28,11 @@ export default function Index() {
           <a href="/2-layer-flexbox">Styling with 2 layer flexbox</a>
         </li>
         <li>
+          <a href="/grid-template-areas-with-load-more-button">
+            Styling with grid-template-areas with load more button
+          </a>
+        </li>
+        <li>
           <a href="/2-layer-flexbox-with-load-more-button">
             Styling with 2 layer flexbox with load more button
           </a>

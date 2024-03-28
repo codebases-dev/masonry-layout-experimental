@@ -1,4 +1,4 @@
-import { MetaFunction } from "@remix-run/cloudflare";
+import { json, MetaFunction } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import hljs from "highlight.js";
 import "highlight.js/styles/github-dark.css";
@@ -21,9 +21,9 @@ export const loader = async () => {
     contentHTML: hljs.highlight("javascript", code).value,
   }));
 
-  return {
+  return json({
     data,
-  };
+  });
 };
 
 export default function Index() {

@@ -2,24 +2,15 @@ import type { MetaFunction } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
 import hljs from "highlight.js";
 import "highlight.js/styles/github-dark.css";
-import { codes } from "~/mocks";
-import { generateGridTemplateAreas } from "~/utils/masonry-layout";
+import { useState } from "react";
+import { fetchCodes } from "~/mocks";
+import {
+  type DataItem,
+  generateGridTemplateAreas,
+} from "~/utils/masonry-layout";
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Styling with grid-template-areas" },
-    { name: "description", content: "Styling with grid-template-areas" },
-  ];
-};
-
-export const loader = async () => {
-  const data = codes.map((code, index) => ({
-    id: index,
-    content: code,
-    contentHTML: hljs.highlight("javascript", code).value,
-  }));
-
-  const styleHTML = `
+function generateGridStyleHTML(data: DataItem[]) {
+  return `
     <style title="grid-style">
       .container {
         display: flex;
@@ -29,12 +20,6 @@ export const loader = async () => {
         line-height: 2;
       }
 
-      .item-container {
-        display: grid;
-        grid-template-areas: ${generateGridTemplateAreas(data, 4)};
-        grid-template-columns: repeat(4, 24rem);
-      }
-      
       .item {
         padding: 1rem;
       }
@@ -44,6 +29,12 @@ export const loader = async () => {
         overflow: hidden;
         box-sizing: border-box;
         padding: 1rem 1.25rem;
+      }
+      
+      .item-container {
+        display: grid;
+        grid-template-areas: ${generateGridTemplateAreas(data, 4)};
+        grid-template-columns: repeat(4, 24rem);
       }
       
       @media (max-width: calc(24rem * 4 + 2rem)) {
@@ -68,15 +59,51 @@ export const loader = async () => {
       }
     </style>
   `;
+}
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Styling with grid-template-areas with load more button" },
+    {
+      name: "description",
+      content: "Styling with grid-template-areas with load more button",
+    },
+  ];
+};
+
+export const loader = async () => {
+  const data = await fetchCodes();
+
+  const transformedData = data.map((code, index) => ({
+    id: index,
+    content: code,
+    contentHTML: hljs.highlight("javascript", code).value,
+  }));
 
   return json({
-    data,
-    styleHTML,
+    data: transformedData,
+    styleHTML: generateGridStyleHTML(transformedData),
   });
 };
 
 export default function Index() {
-  const { data, styleHTML } = useLoaderData<typeof loader>();
+  const { data: data_, styleHTML: styleHTML_ } = useLoaderData<typeof loader>();
+  const [data, setData] = useState(data_);
+  const [styleHTML, setStyleHTML] = useState(styleHTML_);
+
+  const loadMoreData = async () => {
+    const fetchedData = await fetchCodes();
+
+    const transformedFetchedData = fetchedData.map((code, index) => ({
+      id: data.length + index,
+      content: code,
+      contentHTML: hljs.highlight("javascript", code).value,
+    }));
+
+    const newData = [...data, ...transformedFetchedData];
+    setData(newData);
+    setStyleHTML(generateGridStyleHTML(newData));
+  };
 
   return (
     <div
@@ -112,6 +139,8 @@ export default function Index() {
             </div>
           ))}
         </div>
+        {data && <button onClick={loadMoreData}>Load more</button>}
+        {<p>Data size: {data.length}</p>}
       </div>
     </div>
   );

@@ -18,9 +18,7 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader = async () => {
-  const data = await fetchCodes({
-    limit: 10,
-  });
+  const data = await fetchCodes();
 
   const transformedData = data.map((code, index) => ({
     id: index,
@@ -37,7 +35,6 @@ export default function Index() {
   const { data: data_ } = useLoaderData<typeof loader>();
   const [data, setData] = useState<DataItem[]>(data_);
   const [dividedData, setDividedData] = useState<DataItem[][]>();
-  const [loadedAll, setLoadedAll] = useState(false);
 
   const updateDividedData = useCallback((data: DataItem[]) => {
     if (window.matchMedia("(max-width: calc(24rem * 2 + 2rem))").matches) {
@@ -56,19 +53,7 @@ export default function Index() {
   }, []);
 
   const loadMoreData = async () => {
-    const limit = 100;
-    const newData = await fetchCodes({
-      offset: data.length,
-      limit,
-    });
-
-    if (newData.length < limit) {
-      setLoadedAll(true);
-    }
-
-    if (newData.length === 0) {
-      return;
-    }
+    const newData = await fetchCodes();
 
     const transformedData = newData.map((code, index) => ({
       id: data.length + index,
@@ -149,11 +134,7 @@ export default function Index() {
             </div>
           ))}
         </div>
-        {dividedData && (
-          <button onClick={loadMoreData} disabled={loadedAll}>
-            {loadedAll ? "Loaded all" : "Load more"}
-          </button>
-        )}
+        {dividedData && <button onClick={loadMoreData}>Load more</button>}
         {<p>Data size: {data.length}</p>}
       </div>
     </div>
