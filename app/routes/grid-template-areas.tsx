@@ -22,6 +22,7 @@ function generateGridStyleHTML(data: DataItem[]) {
         align-items: center;
         font-size: 1rem;
         line-height: 2;
+        gap: 1rem;
       }
 
       .item {
