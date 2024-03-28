@@ -4,33 +4,39 @@ import hljs from "highlight.js";
 import "highlight.js/styles/github-dark.css";
 import { useCallback, useEffect, useState } from "react";
 import { useOnResizeWindow } from "~/hooks/use-on-resize-window";
-import { codes } from "~/mocks";
+import { fetchCodes } from "~/mocks";
 import { type DataItem, divideItemsIntoColumns } from "~/utils/masonry-layout";
 
 export const meta: MetaFunction = () => {
   return [
     { title: "Styling with 2 layer flexbox" },
-    { name: "description", content: "Styling with 2 layer flexbox" },
+    {
+      name: "description",
+      content: "Styling with 2 layer flexbox",
+    },
   ];
 };
 
 export const loader = async () => {
-  const data = codes.map((code, index) => ({
+  const data = await fetchCodes();
+
+  const transformedData = data.map((code, index) => ({
     id: index,
     content: code,
     contentHTML: hljs.highlight("javascript", code).value,
   }));
 
   return json({
-    data,
+    data: transformedData,
   });
 };
 
 export default function Index() {
-  const { data } = useLoaderData<typeof loader>();
+  const { data: data_ } = useLoaderData<typeof loader>();
+  const [data, setData] = useState<DataItem[]>(data_);
   const [dividedData, setDividedData] = useState<DataItem[][]>();
 
-  const updateDividedData = useCallback(() => {
+  const updateDividedData = useCallback((data: DataItem[]) => {
     if (window.matchMedia("(max-width: calc(24rem * 2 + 2rem))").matches) {
       setDividedData(divideItemsIntoColumns(data, 1));
     } else if (
@@ -44,13 +50,29 @@ export default function Index() {
     } else {
       setDividedData(divideItemsIntoColumns(data, 4));
     }
-  }, [data]);
+  }, []);
+
+  const loadMoreData = async () => {
+    const newData = await fetchCodes();
+
+    const transformedData = newData.map((code, index) => ({
+      id: data.length + index,
+      content: code,
+      contentHTML: hljs.highlight("javascript", code).value,
+    }));
+
+    setData((prevData) => [...prevData, ...transformedData]);
+  };
 
   useEffect(() => {
-    updateDividedData();
-  }, [updateDividedData]);
+    updateDividedData(data);
+  }, [updateDividedData, data]);
 
-  useOnResizeWindow(updateDividedData);
+  useOnResizeWindow(
+    useCallback(() => {
+      updateDividedData(data);
+    }, [updateDividedData, data])
+  );
 
   return (
     <div
@@ -64,9 +86,11 @@ export default function Index() {
       <div
         style={{
           display: "flex",
-          justifyContent: "center",
+          flexDirection: "column",
+          alignItems: "center",
           fontSize: "1rem",
           lineHeight: 2,
+          gap: "1rem",
         }}
       >
         <div
@@ -110,6 +134,8 @@ export default function Index() {
             </div>
           ))}
         </div>
+        {dividedData && <button onClick={loadMoreData}>Load more</button>}
+        {<p>Data size: {data.length}</p>}
       </div>
     </div>
   );
