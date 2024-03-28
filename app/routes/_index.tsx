@@ -1,4 +1,8 @@
 import type { MetaFunction } from "@remix-run/cloudflare";
+import { css } from "styled-system/css";
+import { Container } from "~/components/container";
+import { H1 } from "~/components/h1";
+import { Link } from "~/components/link";
 
 export const meta: MetaFunction = () => {
   return [
@@ -9,25 +13,29 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <div
-      style={{
-        fontFamily: "system-ui, sans-serif",
-        lineHeight: "1.8",
-      }}
-    >
-      <h1>Welcome to Remix</h1>
+    <Container>
+      <H1 className={css({ fontSize: "4xl", fontWeight: "extrabold" })}>
+        Welcome to Remix
+      </H1>
       <p>
         The website is exploring various approaches to styling a code snippet
         gallery using a masonry layout.
       </p>
-      <ul>
+      <ul
+        className={css({
+          listStyle: "inside",
+          paddingLeft: "1rem",
+        })}
+      >
         <li>
-          <a href="/grid-template-areas">Styling with grid-template-areas</a>
+          <Link href="/grid-template-areas">
+            Styling with grid-template-areas
+          </Link>
         </li>
         <li>
-          <a href="/2-layer-flexbox">Styling with 2 layer flexbox</a>
+          <Link href="/2-layer-flexbox">Styling with 2 layer flexbox</Link>
         </li>
       </ul>
-    </div>
+    </Container>
   );
 }

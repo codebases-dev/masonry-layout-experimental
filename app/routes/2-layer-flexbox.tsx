@@ -3,6 +3,10 @@ import { useLoaderData } from "@remix-run/react";
 import hljs from "highlight.js";
 import "highlight.js/styles/github-dark.css";
 import { useCallback, useEffect, useState } from "react";
+import { Button } from "~/components/button";
+import { Container } from "~/components/container";
+import { H1 } from "~/components/h1";
+import { Link } from "~/components/link";
 import { useOnResizeWindow } from "~/hooks/use-on-resize-window";
 import { fetchCodes } from "~/mocks";
 import { type DataItem, divideItemsIntoColumns } from "~/utils/masonry-layout";
@@ -75,14 +79,9 @@ export default function Index() {
   );
 
   return (
-    <div
-      style={{
-        fontFamily: "system-ui, sans-serif",
-        lineHeight: "1.8",
-      }}
-    >
-      <a href="/">Back to home</a>
-      <h1>Styling with 2 layer flexbox</h1>
+    <Container>
+      <Link href="/">Back to home</Link>
+      <H1>Styling with 2 layer flexbox</H1>
       <div
         style={{
           display: "flex",
@@ -134,9 +133,9 @@ export default function Index() {
             </div>
           ))}
         </div>
-        {dividedData && <button onClick={loadMoreData}>Load more</button>}
+        {dividedData && <Button onClick={loadMoreData}>Load more</Button>}
         {<p>Data size: {data.length}</p>}
       </div>
-    </div>
+    </Container>
   );
 }

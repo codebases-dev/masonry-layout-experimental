@@ -3,6 +3,10 @@ import { json, useLoaderData } from "@remix-run/react";
 import hljs from "highlight.js";
 import "highlight.js/styles/github-dark.css";
 import { useState } from "react";
+import { Button } from "~/components/button";
+import { Container } from "~/components/container";
+import { H1 } from "~/components/h1";
+import { Link } from "~/components/link";
 import { fetchCodes } from "~/mocks";
 import {
   type DataItem,
@@ -92,6 +96,7 @@ export default function Index() {
   const [styleHTML, setStyleHTML] = useState(styleHTML_);
 
   const loadMoreData = async () => {
+    console.log("loadMoreData");
     const fetchedData = await fetchCodes();
 
     const transformedFetchedData = fetchedData.map((code, index) => ({
@@ -106,15 +111,10 @@ export default function Index() {
   };
 
   return (
-    <div
-      style={{
-        fontFamily: "system-ui, sans-serif",
-        lineHeight: "1.8",
-      }}
-    >
+    <Container>
       <div dangerouslySetInnerHTML={{ __html: styleHTML }} />
-      <a href="/">Back to home</a>
-      <h1>Styling with grid-template-areas</h1>
+      <Link href="/">Back to home</Link>
+      <H1>Styling with grid-template-areas</H1>
       <div className="container">
         <div
           className="item-container"
@@ -139,9 +139,9 @@ export default function Index() {
             </div>
           ))}
         </div>
-        {data && <button onClick={loadMoreData}>Load more</button>}
+        {data && <Button onClick={loadMoreData}>Load more</Button>}
         {<p>Data size: {data.length}</p>}
       </div>
-    </div>
+    </Container>
   );
 }

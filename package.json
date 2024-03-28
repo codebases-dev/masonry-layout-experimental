@@ -4,6 +4,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
+    "prepare": "panda codegen",
     "build": "remix vite:build",
     "deploy": "wrangler pages deploy ./build/client",
     "dev": "remix vite:dev",
@@ -15,6 +16,7 @@
   "dependencies": {
     "@remix-run/cloudflare": "^2.8.1",
     "@remix-run/cloudflare-pages": "^2.8.1",
+    "@remix-run/css-bundle": "^2.8.1",
     "@remix-run/react": "^2.8.1",
     "highlight.js": "^11.9.0",
     "isbot": "^4.1.0",
@@ -24,6 +26,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230518.0",
+    "@pandacss/dev": "^0.36.1",
     "@remix-run/dev": "^2.8.1",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
