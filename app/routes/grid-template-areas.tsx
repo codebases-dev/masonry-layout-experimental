@@ -102,37 +102,39 @@ export default function Index() {
   };
 
   return (
-    <Container>
+    <>
       <div dangerouslySetInnerHTML={{ __html: styleHTML }} />
-      <Link href="/">Back to home</Link>
-      <H1>Styling with grid-template-areas</H1>
-      <div className="container">
-        <div
-          className="item-container"
-          style={{
-            display: "grid",
-          }}
-        >
-          {data.map((item) => (
-            <div
-              className="item"
-              key={item.id}
-              style={{
-                gridArea: `item${item.id}`,
-              }}
-            >
-              <pre style={{ margin: 0 }}>
-                <code
-                  className="hljs code"
-                  dangerouslySetInnerHTML={{ __html: item.contentHTML }}
-                />
-              </pre>
-            </div>
-          ))}
+      <Container>
+        <Link href="/">Back to home</Link>
+        <H1>Styling with grid-template-areas</H1>
+        <div className="container">
+          <div
+            className="item-container"
+            style={{
+              display: "grid",
+            }}
+          >
+            {data.map((item) => (
+              <div
+                className="item"
+                key={item.id}
+                style={{
+                  gridArea: `item${item.id}`,
+                }}
+              >
+                <pre style={{ margin: 0 }}>
+                  <code
+                    className="hljs code"
+                    dangerouslySetInnerHTML={{ __html: item.contentHTML }}
+                  />
+                </pre>
+              </div>
+            ))}
+          </div>
+          {data && <Button onClick={loadMoreData}>Load more</Button>}
+          {<p>Data size: {data.length}</p>}
         </div>
-        {data && <Button onClick={loadMoreData}>Load more</Button>}
-        {<p>Data size: {data.length}</p>}
-      </div>
-    </Container>
+      </Container>
+    </>
   );
 }
